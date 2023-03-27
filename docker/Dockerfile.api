@@ -1,0 +1,6 @@
+FROM php:7.4
+WORKDIR /php/app
+COPY composer.json .
+RUN composer install
+COPY . .
+RUN ["php", "-S", "localhost:4080"]

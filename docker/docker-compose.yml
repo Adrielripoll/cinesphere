@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  app:
+    container_name: movies-api
+    build: 
+      context: ../
+      dockerfile: /docker/Dockerfile.api
+    ports:
+      -4080:4080
+    volumes:
+      - ../:/php/app
+    depends_on:
+      - database
+  database:
+    container_name: movies-database
+    build: 
+      context: ../
+      dockerfile: /docker/Dockerfile.mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
