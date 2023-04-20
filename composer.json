@@ -1,5 +1,12 @@
 {
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        }
+    },
     "require": {
-        "slim/slim": "3.*"
+        "slim/slim": "^4.10",
+        "slim/psr7": "^1.5",
+        "vlucas/phpdotenv": "^5.5"
     }
 }

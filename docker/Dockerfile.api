@@ -1,6 +1,14 @@
-FROM php:7.4
+FROM php:8.2
+
+RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 WORKDIR /php/app
 COPY composer.json .
 RUN composer install
 COPY . .
-RUN ["php", "-S", "localhost:4080"]
+RUN ["php", "-S", "localhost:4080", "-t", "public"]
