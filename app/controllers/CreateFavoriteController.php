@@ -23,19 +23,22 @@ class CreateFavoriteController {
         $movieId = $data->movieId;
         $imageUrl = $data->imageUrl;
         $cast = $data->cast;
-        $movieTitle = $data->movieTitle;
-        $movieRelease = $data->movieRelease;
+        $title = $data->title;
+        $release = $data->release;
 
         $sqlMovie = mysqli_query($this->conn, "SELECT movieId FROM favorites WHERE movieId='$movieId'");
 
         if(mysqli_num_rows($sqlMovie) > 0){
             $response->getBody()->write(json_encode(array("message" => "Filme já incluso na lista de favoritos")));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
-        } 
+        }
 
-        mysqli_query($this->conn, "INSERT INTO favorites (movieId, imageUrl, cast, movieTitle, movieRelease) 
-            VALUES ('$movieId', '$imageUrl', '$cast', '$movieTitle', '$movieRelease')");
+        mysqli_query($this->conn, "INSERT INTO favorites (movieId, imageUrl, `cast`, title, `release`) 
+            VALUES ('$movieId', '$imageUrl', '$cast', '$title', '$release')");
 
+        $last_insert_id = $this->conn->insert_id;
+        $movie = $this->conn->query("SELECT * FROM favorites WHERE id = $last_insert_id")->fetch_assoc();
+        
         if (mysqli_error($this->conn)) {
             echo mysqli_error($this->conn);
             $response->getBody()->write(json_encode(array("message" => "Erro! tente novamente mais tarde.")));
@@ -44,7 +47,7 @@ class CreateFavoriteController {
 
         mysqli_close($this->conn);
 
-        $response->getBody()->write(json_encode(array("message" => "Filme adicionado com sucesso")));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $response->getBody()->write(json_encode($movie));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 }

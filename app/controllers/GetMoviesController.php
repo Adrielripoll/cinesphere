@@ -8,8 +8,12 @@ class GetMoviesController {
 
     public function execute(Request $request, Response $response, array $args){
         $page = $args["page"] ?? '1';
+        
+        $queryParams = $request->getQueryParams();
+        $limitPerPage = $queryParams["limit"] ?? '20';
 
-        $endpoint = 'https://moviesdatabase.p.rapidapi.com/titles?titleType=movie&list=most_pop_movies&endYear=2023&startYear=1950&sort=year.decr&page='.$page;
+
+        $endpoint = 'https://moviesdatabase.p.rapidapi.com/titles?titleType=movie&list=most_pop_movies&limit=' . $limitPerPage . '&endYear=2023&startYear=1950&sort=year.decr&page='.$page;
 
         $curl = curl_init();
 
@@ -44,6 +48,10 @@ class GetMoviesController {
             $month = $result->releaseDate->month;
             $year = $result->releaseDate->year;
             $release = $year.'-'.$month.'-'.$day;
+
+            if(!$imageUrl){
+                continue;
+            }
 
             $json[] = array("movieId" => $movieId, "imageUrl" => $imageUrl, "cast" => $cast, "title" => $title, "release" => $release); 
         }

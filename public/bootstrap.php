@@ -2,7 +2,7 @@
 
 use app\controllers\GetMoviesController;
 use app\controllers\CreateFavoriteController;
-use app\controllers\GetFavoriteList;
+use app\controllers\GetFavoriteListController;
 use app\controllers\FavoriteWatchedController;
 use app\controllers\DeleteFavoriteController;
 
@@ -28,7 +28,7 @@ $app->add(function ($request, $handler) {
 
 $app->get('/movies/{page}', [GetMoviesController::class, 'execute']);
 $app->post('/favorites', [CreateFavoriteController::class, 'execute']);
-$app->get('/favorites', [GetFavoriteList::class, 'execute']);
+$app->get('/favorites', [GetFavoriteListController::class, 'execute']);
 $app->put('/favorites/{id}', [FavoriteWatchedController::class, 'execute']);
 $app->delete('/favorites/{id}', [DeleteFavoriteController::class, 'execute']);
 
