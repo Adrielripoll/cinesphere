@@ -15,18 +15,23 @@ class DeleteFavoriteController {
     public function execute(Request $request, Response $response, array $args){
         $id = $args['id'];
 
-        $favoriteQuery = "SELECT * FROM favorites WHERE id = '$id'";
+        $favoriteQuery = "SELECT * FROM favorites WHERE id = ?";
 
-        $favorite = mysqli_query($this->conn, $favoriteQuery);
+        $stmtFavorite = mysqli_prepare($this->conn, $favoriteQuery);
+        $stmtFavorite->bind_param('s', $id);
+        $stmtFavorite->execute();
+        $favorite = $stmtFavorite->get_result();
 
         if(mysqli_num_rows($favorite) == 0){
             $response->getBody()->write(json_encode(array("message" => "Favorito não encontrado")));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
 
-        $deleteQuery = "DELETE FROM favorites WHERE id = '$id'";
+        $deleteQuery = "DELETE FROM favorites WHERE id = ?";
 
-        mysqli_query($this->conn, $deleteQuery);
+        $stmtDeleteFavorite = mysqli_prepare($this->conn, $deleteQuery);
+        $stmtDeleteFavorite->bind_param('s', $id);
+        $stmtDeleteFavorite->execute();
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(204);
     }
