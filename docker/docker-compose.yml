@@ -14,3 +14,22 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - 3306:3306
+  php-fpm:
+    container_name: php
+    image: php-fpm
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - 9000:9000
+  nginx:
+    container_name: nginx
+    image: nginx
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.nginx
+    ports:
+      - 80:80
+
+    
+    

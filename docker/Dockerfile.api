@@ -1,14 +1,30 @@
-FROM php:8.2
+FROM php:7.4-fpm
 
-RUN apt-get update && apt-get install -y \
-    git \
+# Copia os arquivos da aplicação para dentro do container
+COPY . /var/www/html/
+
+# Instala as dependências do sistema e do PHP
+RUN apt-get update && \
+    apt-get install -y \
+    libicu-dev \
+    libzip-dev \
     zip \
-    unzip
+    && docker-php-ext-configure intl && \
+    docker-php-ext-install -j$(nproc) pdo_mysql intl zip && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Define o diretório de trabalho
+WORKDIR /var/www/html
 
-WORKDIR /php/app
-COPY composer.json .
-RUN composer install
-COPY . .
-RUN ["php", "-S", "localhost:4080", "-t", "public"]
+# Define as variáveis de ambiente
+ENV PATH="/var/www/html/vendor/bin:${PATH}"
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Instala o Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Instala as dependências do PHP
+RUN composer install --no-dev --no-scripts --no-progress --prefer-dist --optimize-autoloader --no-interaction --no-suggest
+
+# Inicia o PHP-FPM
+CMD ["php-fpm"]
